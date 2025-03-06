@@ -18,9 +18,9 @@ class MovieSeries(scrapy.Spider):
         """
 
         url = "https://www.imdb.com/chart/top/?ref_=nv_mv_250"
-        yield scrapy.Request(url=url, callback=self.parse)
+        yield scrapy.Request(url=url, callback=self.parse, meta={'playwright': True})
 
-    def parse(self, response: Response) -> Iterator[Request]:
+    def parse(self, response: Response, **kwargs) -> Iterator[Request]:
         """
         parses urls from top 250 movies and series
         calls parse_detail function for further processing
