@@ -3,6 +3,7 @@ from typing import Iterator
 
 import scrapy
 from scrapy.http import Request, Response
+from scrapy.selector import Selector
 
 
 class MovieSeries(scrapy.Spider):
@@ -18,16 +19,32 @@ class MovieSeries(scrapy.Spider):
         """
 
         url = "https://www.imdb.com/chart/top/?ref_=nv_mv_250"
-        yield scrapy.Request(url=url, callback=self.parse, meta={'playwright': True})
+        yield scrapy.Request(url=url, callback=self.parse, meta={'playwright': True, 'playwright_include_page': True})
 
-    def parse(self, response: Response, **kwargs) -> Iterator[Request]:
+    async def parse(self, response: Response, **kwargs) -> Iterator[Request]:
         """
         parses urls from top 250 movies and series
         calls parse_detail function for further processing
         :param response: The HTTP response received from the request
         :return: An Iterator of scrapy Request objects
         """
-        items = response.css(
+        page = response.meta['playwright_include_page']
+        page.set_default_timeout(1000)
+        await page.wait_for_timeout(5000)
+        try:
+            last_position = await page.evaluate('window.scrollY')
+            while True:
+                await page.evaluate('window.scrollBy(0, 2000)')
+                await page.wait_for_timeout(700)
+                current_position = await page.evaluate('window.scrollY')
+                if current_position == last_position:
+                    break
+                last_position = current_position
+        except (AttributeError, TimeoutError):
+            pass
+        content = await page.content()
+        selector = Selector(text=content)
+        items = selector.css(
             "#__next > main > div > div.ipc-page-content-container."
             "ipc-page-content-container--center > section > div >"
             "div.ipc-page-grid.ipc-page-grid--bias-left > div >"

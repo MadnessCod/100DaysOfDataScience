@@ -16,6 +16,7 @@ dependencies = [
     "beautifulsoup4 (>=4.13.3,<5.0.0)",
     "black (>=25.1.0,<26.0.0)",
     "scrapy-playwright (>=0.0.43,<0.0.44)",
+    "playwright (>=1.50.0,<2.0.0)",
 ]
 
 
