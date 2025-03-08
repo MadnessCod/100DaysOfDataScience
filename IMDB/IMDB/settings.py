@@ -98,7 +98,11 @@ DOWNLOAD_HANDLERS = {
     "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
     "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
 }
-PLAYWRIGHT_BROWSER_TYPE = "webkit"
+
 PLAYWRIGHT_LAUNCH_OPTIONS = {
+    "args": [
+        "--disable-web-security"
+        "--disable-features=IsolateOrigins,site-per-process"
+    ],
     "headless": False,
 }

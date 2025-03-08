@@ -19,7 +19,11 @@ class MovieSeries(scrapy.Spider):
         """
 
         url = "https://www.imdb.com/chart/top/?ref_=nv_mv_250"
-        yield scrapy.Request(url=url, callback=self.parse, meta={'playwright': True, 'playwright_include_page': True})
+        yield scrapy.Request(
+            url=url,
+            callback=self.parse,
+            meta={"playwright": True, "playwright_include_page": True},
+        )
 
     async def parse(self, response: Response, **kwargs) -> Iterator[Request]:
         """
@@ -28,36 +32,29 @@ class MovieSeries(scrapy.Spider):
         :param response: The HTTP response received from the request
         :return: An Iterator of scrapy Request objects
         """
-        page = response.meta['playwright_include_page']
+        page = response.meta["playwright_page"]
         page.set_default_timeout(1000)
         await page.wait_for_timeout(5000)
         try:
-            last_position = await page.evaluate('window.scrollY')
+            last_position = await page.evaluate("window.scrollY")
             while True:
-                await page.evaluate('window.scrollBy(0, 2000)')
+                await page.evaluate("window.scrollBy(0,2000)")
                 await page.wait_for_timeout(700)
-                current_position = await page.evaluate('window.scrollY')
+                current_position = await page.evaluate("window.scrollY")
                 if current_position == last_position:
+                    print("Reached the bottom of the page.")
                     break
                 last_position = current_position
-        except (AttributeError, TimeoutError):
-            pass
+        except AttributeError as e:
+            print(f"Error: {e}")
+
         content = await page.content()
         selector = Selector(text=content)
-        items = selector.css(
-            "#__next > main > div > div.ipc-page-content-container."
-            "ipc-page-content-container--center > section > div >"
-            "div.ipc-page-grid.ipc-page-grid--bias-left > div >"
-            "ul > li > div > div > div > div > div.sc-d5ea4b9d-0."
-            "ejavrk.cli-children > div.ipc-title.ipc-title--base."
-            "ipc-title--title.ipc-title-link-no-icon.ipc-title--on"
-            "-textPrimary.sc-3713cfda-2.fSzZES.cli-title.with-margin "
-            "> a::attr(href)"
-        ).getall()
-
+        items = selector.xpath(
+            '//*[@id="__next"]/main/div/div[3]/section/div/div[2]/div/ul/li/'
+            'div/div/div/div/div[2]/div[1]/a/@href').getall()
         for item in items:
             yield response.follow(item, callback=self.parse_detail)
-            break
 
     def parse_detail(self, response: Response):
         """
