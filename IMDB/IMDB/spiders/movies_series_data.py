@@ -18,12 +18,14 @@ class MovieSeries(scrapy.Spider):
         standard start_requests which sends Request objects to parse
         """
 
-        url = "https://www.imdb.com/chart/top/?ref_=nv_mv_250"
-        yield scrapy.Request(
-            url=url,
-            callback=self.parse,
-            meta={"playwright": True, "playwright_include_page": True},
-        )
+        urls = ["https://www.imdb.com/chart/top/?ref_=nv_mv_250",
+                "https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250"]
+        for url in urls:
+            yield scrapy.Request(
+                url=url,
+                callback=self.parse,
+                meta={"playwright": True, "playwright_include_page": True},
+            )
 
     async def parse(self, response: Response, **kwargs) -> Iterator[Request]:
         """
