@@ -6,13 +6,20 @@
 
 # useful for handling different item types with a single interface
 import csv
-
-from itemadapter import ItemAdapter
+import pathlib
 
 
 class ImdbPipeline:
     def open_spider(self, spider):
-        self.file = open('output.csv', 'w', newline='', encoding='utf-8')
+        data_folder = pathlib.Path(__file__).parent.parent / 'data'
+        try:
+            if not pathlib.Path(data_folder).exists():
+                pathlib.Path(data_folder).mkdir(parents=True, exist_ok=True)
+        except PermissionError:
+            print('PermissionError')
+        csv_file_path = pathlib.Path(__file__).parent.parent / 'data' / 'imdb.csv'
+
+        self.file = open(csv_file_path, 'w', newline='', encoding='utf-8')
         self.writer = csv.writer(self.file)
         self.writer.writerow([
             'title',
