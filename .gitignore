@@ -129,3 +129,6 @@ test-output.*
 
 # OSX miscellaneous
 .DS_Store
+
+# Project based
+*.csv

@@ -1,7 +1,7 @@
 [project]
 name = "quoteguessinggame"
 version = "0.1.0"
-description = ""
+description = "this projected is meant for practicing data science with python"
 authors = [
     {name = "Sadra Hosseini",email = "sadrahosseini98@gmail.com"}
 ]
@@ -17,6 +17,10 @@ dependencies = [
     "black (>=25.1.0,<26.0.0)",
     "scrapy-playwright (>=0.0.43,<0.0.44)",
     "playwright (>=1.50.0,<2.0.0)",
+    "pandas>=2.2.3",
+    "numpy>=2.2.4",
+    "matplotlib>=3.10.1",
+    "jupyter>=1.1.1",
 ]
 
 
