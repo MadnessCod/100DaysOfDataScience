@@ -10,6 +10,7 @@ class ImdbItem(scrapy.Item):
     """
     item definition for data from IMDB
     """
+
     title = scrapy.Field()
     rating = scrapy.Field()
     popularity = scrapy.Field()
@@ -18,3 +19,4 @@ class ImdbItem(scrapy.Item):
     tags = scrapy.Field()
     budget = scrapy.Field()
     first_us_ca = scrapy.Field()
+    top_cast = scrapy.Field()
