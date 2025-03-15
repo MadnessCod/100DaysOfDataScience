@@ -132,3 +132,5 @@ test-output.*
 
 # Project based
 *.csv
+*.db
+*.txt
