@@ -19,7 +19,7 @@ class QuoteScraper:
     file: Literal["Quotes.json"] = "Quotes.json"
     url: Literal["http://quotes.toscrape.com/"] = "http://quotes.toscrape.com/"
 
-    async def scrape(self, url) -> httpx.Response.text:
+    async def scrape(self, url) -> str | None:
         """
         send request to url
         :param url: url to scrape
@@ -61,13 +61,30 @@ class QuoteScraper:
         for quote in quotes:
             quote_text = quote.find("span", class_="text").text
             author = quote.find("small", class_="author").text
-            author_link = quote.find_all("span")[1].find("a").get("href")
+            author_link = quote.find_all("span")[1].find("a").get("href").strip("/")
+            await self.author_page_scrape(f"{self.url}{author_link}/")
             tags = [a.text for a in quote.find("div", class_="tags").find_all("a")]
             tags_link = [
                 a.get("href") for a in quote.find("div", class_="tags").find_all("a")
             ]
 
+    async def author_page_scrape(self, url: str) -> None:
+        """
+        Function makes request to author url and extracts info from the page
+        :param url: author page link extracted form text_extract function
+        :type url: str
+        :return: None
+        """
+        text = await self.scrape(url=url)
+        soup = BeautifulSoup(text, "html.parser")
+        try:
+            born_date = soup.find("span", class_="author-born-date").text
+            born_location = soup.find("span", class_="author-born-location").text
+            description = soup.find("div", class_="author-description").text
+        except AttributeError:
+            bord_date, born_location, description = None, None, None
+
 
 if __name__ == "__main__":
-    quotes = QuoteScraper()
-    asyncio.run(quotes.increment_page())
+    quote = QuoteScraper()
+    asyncio.run(quote.increment_page())
