@@ -36,7 +36,10 @@ class QuotesItem:
         CREATE TABLE IF NOT EXISTS author(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        link TEXT NOT NULL);
+        link TEXT NOT NULL,
+        born INTEGER,
+        location TEXT,
+        description TEXT);
         """
         )
 
@@ -45,10 +48,21 @@ class QuotesItem:
         CREATE TABLE IF NOT EXISTS quote(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             text TEXT NOT NULL, 
-            FOREIGN KEY (author) REFERENCES author(id) ON DELETE CASCADE, 
-            FORIEGN KEY (tags) REFERENCES tag(id) ON DELETE CASCADE);
+            author INTEGER,
+            FOREIGN KEY (author) REFERENCES author(id) ON DELETE CASCADE);
             """
         )
+        self.cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS quote_tag(
+            quote_id INTEGER NOT NULL,
+            tag_id INTEGER NOT NULL,
+            FOREIGN KEY(quote_id) REFERENCES quote(id) ON DELETE CASCADE,
+            FOREIGN KEY(tag_id) REFERENCES tag(id) ON DELETE CASCADE,
+            PRIMARY KEY (quote_id, tag_id));
+            """
+        )
+
 
 
 if __name__ == "__main__":
